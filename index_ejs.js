@@ -4,9 +4,22 @@
     const db = require("./db.js")
     const url = require("url")
     const boyParser = require("body-parser")
+    const session = require("express-session")
     const port = 8080
 
     app.set("view engine", "ejs")
+
+
+
+    const dia = 1000 * 60 * 60 * 24;
+    const min15 = 1000 * 60 * 60 / 4;
+
+app.use(session({
+    secret: "hrgfgrfrty84fwir767",
+    saveUninitialized:true,
+    cookie: { maxAge: dia},
+    resave: false 
+}))
 
     //config para as variaveis post
     app.use(boyParser.urlencoded({ extended: false }))
@@ -28,6 +41,23 @@
     //console.log(consultaLivro[0])
 
 
+    app.post("/login",async(req,res)=>{
+        let info=req.body
+        let consultaUsers = await db.selectUsers(info.email,info.senha)
+        consultaUsers == "" ? res.send("Usuário não encontrado!") : res.redirect("/")
+        const session_user=req.session
+        consultaUsers != "" ? session_user = req.session.nome : null
+         
+    })
+    
+    app.get("/login",async(req,res)=>{
+        res.render("login",{
+            titulo:'Entrar - Livros Online'
+        })
+    })
+    
+
+
     app.get("/", (req, res) => {
         res.render(`index`, {
             titulo: "Conheça nossos livros",
@@ -36,8 +66,6 @@
             galeria: consultaLivro
         })
     })
-
-
 
 
     app.get("/upd-promo", (req, res) => {
@@ -109,7 +137,6 @@ app.post("/delete-carrinho",async(req,res)=>{
     res.send(info)
     
 })
-
 
 
 

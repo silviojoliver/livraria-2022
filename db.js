@@ -49,6 +49,15 @@ async function selectPromo(){
     return rows
 }
 
+async function selectUsers(email,senha){
+    const conectado = await conecta() 
+    const values= [email,senha]
+    const [rows] = await conectado.query("SELECT * FROM usuarios Where email=? AND senha=?",values)  
+    //console.log(rows)
+    return rows
+}
+
+
 
 async function updatePromo(promo,id){
     const conectado = await conecta();
@@ -122,6 +131,7 @@ module.exports = {
     selectSingle,
     selectPromo,
     selectCarrinho,
+    selectUsers,
     insertLivro,
     insertContato,
     insertUsuario,
