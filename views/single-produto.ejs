@@ -1,0 +1,66 @@
+<%- include("header.ejs") %>
+<%- include("nav.ejs") %>
+    
+    <!-- =============== Conteúdo ================== -->
+    <div class="container mt-5 pt-5">
+        <header>
+            <h1>Books Online
+                <small>Market Place de Livros </small> </h1>
+            <h3 class="font-weight-bold"><%=promo%></h3>
+            <% if(promo) { %>
+            <p>Compre agora o novo livro <b><%=livro[0].titulo%> - <%=livro[0].genero%></b></p> 
+                <% } %>
+        </header>
+        <!-- =============== Produtos ================== -->
+        <div class="row">
+        <!--Inicio da Sinle-->
+        
+            <div class="col-md-12 col-sm-12 col-lg-10 livro">
+                <div class="card">
+                    <img class="card-img-top w-25" src="books/<%=galeria[0].imagem%>" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title"><%=galeria[0].titulo%></h4>
+                        <p class="card-text"><%=galeria[0].resumo%></p>
+                        <h2><%=galeria[0].valor%></h2>
+                        <a href="carrinho/?id=<%=galeria[0].livros_id%>" class="btn btn-primary">Adicionar ao carrinho</a>
+                    </div>
+                </div>
+            </div>  
+       
+        <!--Fim do bloco da Single-->
+        </div>
+        <!-- =============== Fim dos Produtos ================== -->
+
+        <!-- =============== Paginação ================== -->
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+                <li class="page-item active">
+                    <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- =============== Fim da Paginação ================== -->
+    </div>
+    <!-- =============== Fim do Conteúdo ================== -->
+
+    <script src="js/controle.js"></script>
+
+<%- include("footer.ejs") %>
