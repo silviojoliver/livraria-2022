@@ -31,8 +31,16 @@
             <li class="nav-item">
                 <a class="nav-link" href="/contato">Fale conosco</a>
             </li>
+            <% if (info.user){ %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Sair</a>
+                </li>
+                <% } %>
         </ul>
         <div class="navbar-text">
+            <span class="d-inline-block mr-3 font-weight-bold text-white">
+             <%=info.user%>
+            </span>
             Books Online
         </div>
     </div>

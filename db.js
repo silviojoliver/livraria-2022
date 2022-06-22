@@ -1,3 +1,8 @@
+const { builtinModules } = require("module")
+const { getMaxListeners } = require("process")
+const session = require("express-session")
+const mysqlSession = require("express-mysql-session")(session)
+
 async function conecta() {
     const mysql = require("mysql2/promise")
     const conn = await mysql.createConnection({
@@ -6,12 +11,26 @@ async function conecta() {
         password: "Silvio7119$#@!",
         database: "filmes"
     })
-    console.log("mySQL conectado!")
     global.connection = conn
     return connection
 }
-//conecta()
 
+async function makeSession(app,opt){
+    
+    const dia = 1000 * 60 * 60 * 24;
+    const min15 = 1000 * 60 * 60 / 4;
+    const conectado = await conecta()
+
+    const  sessionStore = new mysqlSession(opt,conectado)
+    app.use(session({
+        secret: "hrgfgrfrty84fwir767",
+        saveUninitialized:false,
+        store:sessionStore,
+        cookie: { maxAge: dia},
+        resave: false 
+    }))
+
+}
 async function selectFilmes(){
     const conectado = await conecta()
     const [rows] = await conectado.query("SELECT f.titulo,f.genero,d.nome FROM videos as f INNER JOIN diretor as d ON f.diretor = d.diretor_id ORDER BY f.titulo ASC")
@@ -24,8 +43,7 @@ async function selectLivros(){
     const [rows] = await conectado.query("SELECT * FROM livros ORDER BY livros_id DESC")
     //console.log(rows)
     return rows
-
-}
+}   
 
 async function selectCarrinho(){
     const conectado = await conecta()
@@ -51,29 +69,28 @@ async function selectPromo(){
 
 async function selectUsers(email,senha){
     const conectado = await conecta() 
-    const values= [email,senha]
+    const values = [email,senha]
     const [rows] = await conectado.query("SELECT * FROM usuarios Where email=? AND senha=?",values)  
-    //console.log(rows)
+    console.log(rows)
     return rows
 }
-
-
 
 async function updatePromo(promo,id){
     const conectado = await conecta();
     const values = [promo,id]
     return await conectado.query("UPDATE livros set promo=? Where livros_id=?",values)
-
 }
-//updatePromo(1,3)
 
+async function updateProduto(resumo,imagem,valor,titulo,id){
+    const conectado = await conecta();
+    const values = [resumo,imagem,valor,titulo,id]
+    return await conectado.query("UPDATE livros set resumo=?,imagem=?,valor=?,titulo=? Where livros_id=?",values)
+}
 
-//Deletar
 async function deleteCarrinho(id){
     const conectado = await conecta();
     const values = [id]
     return await conectado.query("DELETE FROM carrinho Where carrinho_id=?",values)
-
 }
 
 
@@ -104,27 +121,6 @@ async function insertCarrinho(carrinho){
     return rows
 }
 
-async function insertUsuario(usuario){ // Insere registro na tabela de forma manual
-    const conectado = await conecta()
-    const values = [usuario.nome,usuario.email,usuario.telefone,usuario.senha,usuario.conf_senha]
-    const [rows] = await conectado.query("insert into usuarios(nome, email, telefone, senha, conf_senha) values(?,?,?,?,?)",values)
-    //console.log("Insert OK!")
-    return rows
-}
-
-
-// insertCadastro({
-// nome:"Luna",
-// email:"Maria",
-// telefone:"luna@gmail.com",
-// senha:123456,
-// conf_senha:123456})
-
-//selectFilmes()
-//selectLivros()
-//selectSingle(10)
-//insertLivro({titulo:"Wild Fury",resumo:"Lorem Lorem",valor:40.35,imagem:"wild-fury.jpg"})
-
 module.exports = {
     selectFilmes,
     selectLivros,
@@ -134,8 +130,9 @@ module.exports = {
     selectUsers,
     insertLivro,
     insertContato,
-    insertUsuario,
     insertCarrinho,
     updatePromo,
-    deleteCarrinho
+    updateProduto,
+    deleteCarrinho,
+    makeSession
 }
